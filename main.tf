@@ -56,7 +56,7 @@ provider "aws" {
  }
 
  resource "aws_eip" "nateIP" {
-   vpc = true
+   domain = "vpc"
  }
 
  #Creating the NAT Gateway using subnet_id and allocation_id
