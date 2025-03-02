@@ -14,3 +14,7 @@ variable "public_subnets" {
 variable "private_subnets" {
     default = "10.0.0.192/26"
 }
+
+variable "ami" {
+    default = "ami-05b10e08d247fb927"
+}

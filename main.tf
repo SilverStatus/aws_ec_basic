@@ -9,12 +9,12 @@ provider "aws" {
    tags = {
      Name = "MainVPC"
    }
- }
+}
 
  #Create Internet Gateway and attach it to VPC
  resource "aws_internet_gateway" "IGW" {    # Creating Internet Gateway
     vpc_id =  aws_vpc.Main.id               # vpc_id will be generated after we create VPC
- }
+}
 
  #Create a Public Subnets.
  resource "aws_subnet" "publicsubnets" {    # Creating Public Subnets
@@ -23,7 +23,7 @@ provider "aws" {
    tags = {
      Name = "PublicSubnet"
    }
- }
+}
 
  #Create a Private Subnet                   
  resource "aws_subnet" "privatesubnets" {
@@ -32,7 +32,7 @@ provider "aws" {
    tags = {
      Name = "PrivateSubnet"
    }
- }
+}
 
  #Route table for Public Subnet's
  resource "aws_route_table" "PublicRT" {             # Creating RT for Public Subnet
@@ -41,7 +41,7 @@ provider "aws" {
             cidr_block = "0.0.0.0/0"                 # Traffic from Public Subnet reaches Internet via Internet Gateway
             gateway_id = aws_internet_gateway.IGW.id
      }
- }
+}
 
  #Route table for Private Subnet's
  resource "aws_route_table" "PrivateRT" {         # Creating RT for Private Subnet
@@ -50,23 +50,23 @@ provider "aws" {
         cidr_block = "0.0.0.0/0"                  # Traffic from Private Subnet reaches Internet via NAT Gateway
         nat_gateway_id = aws_nat_gateway.NATgw.id
    }
- }
+}
 
  #Route table Association with Public Subnet's
  resource "aws_route_table_association" "PublicRTassociation" {
     subnet_id = aws_subnet.publicsubnets.id
     route_table_id = aws_route_table.PublicRT.id
- }
+}
 
  #Route table Association with Private Subnet's
  resource "aws_route_table_association" "PrivateRTassociation" {
     subnet_id = aws_subnet.privatesubnets.id
     route_table_id = aws_route_table.PrivateRT.id
- }
+}
 
  resource "aws_eip" "nateIP" {
    domain = "vpc"
- }
+}
 
  #Creating the NAT Gateway using subnet_id and allocation_id
  resource "aws_nat_gateway" "NATgw" {
@@ -75,4 +75,15 @@ provider "aws" {
    tags = {
      Name = "NATGateway-1"
    }
- }
+}
+
+#Creating the EC2 instance using public subnet
+ resource "aws_instance" "ec2" {
+    ami = var.ami
+    instance_type = "t2.micro"
+    subnet_id = aws_subnet.publicsubnets.id
+    tags = {
+        Name = "EC2Instance"  
+    }
+}
+    
